@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="mn" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CINEMAX — Монголын Шилдэг Кино, Сериал Платформ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Netflix+Sans:wght@400;500;700;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- =========================================================================
+       NETFLIX STYLE CSS STYLING (#141414 BACKGROUND, #E50914 CRIMSON ACCENTS)
+       ========================================================================= -->
+  <style>
+    :root {
+      --netflix-bg: #141414;
+      --netflix-card-bg: #181818;
+      --netflix-red: #e50914;
+      --netflix-red-hover: #f40612;
+      --netflix-gray: #808080;
+      --netflix-light-gray: #b3b3b3;
+    }
+
+    html.light {
+      --netflix-bg: #f3f4f6;
+      --netflix-card-bg: #ffffff;
+      --netflix-red: #e50914;
+      --netflix-red-hover: #c50711;
+      --netflix-gray: #6b7280;
+      --netflix-light-gray: #4b5563;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--netflix-bg);
+      color: #ffffff;
+      overflow-x: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    html.light body {
+      color: #111827;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--netflix-bg);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #333333;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555555;
+    }
+
+    /* Hide horizontal scrollbar for carousels */
+    .netflix-row-track {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .netflix-row-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Netflix Logo Red Glow */
+    .netflix-logo {
+      color: var(--netflix-red);
+      font-family: 'Inter', sans-serif;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-shadow: 0 0 20px rgba(229, 9, 20, 0.4);
+    }
+
+    /* Netflix Card Zoom & Preview */
+    .netflix-card {
+      background-color: var(--netflix-card-bg);
+      transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      flex: 0 0 auto;
+      width: 210px;
+    }
+    @media (min-width: 640px) {
+      .netflix-card { width: 240px; }
+    }
+    @media (min-width: 1024px) {
+      .netflix-card { width: 270px; }
+    }
+
+    .netflix-card:hover {
+      transform: scale(1.08) translateY(-6px);
+      z-index: 30;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.75);
+    }
+
+    .netflix-btn-red {
+      background-color: var(--netflix-red);
+      color: #ffffff;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+    .netflix-btn-red:hover {
+      background-color: var(--netflix-red-hover);
+      transform: scale(1.03);
+    }
+
+    .netflix-btn-gray {
+      background-color: rgba(109, 109, 110, 0.7);
+      color: #ffffff;
+      backdrop-filter: blur(8px);
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+    .netflix-btn-gray:hover {
+      background-color: rgba(109, 109, 110, 0.9);
+      transform: scale(1.03);
+    }
+
+    /* Fade-in view transition */
+    @keyframes netflixFade {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-view {
+      animation: netflixFade 0.3s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+    }
+
+    /* Range slider styling */
+    input[type="range"].netflix-range {
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.3);
+      height: 5px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    input[type="range"].netflix-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--netflix-red);
+      cursor: pointer;
+    }
+
+    /* Mobile bottom spacing */
+    @media (max-width: 767px) {
+      body { padding-bottom: 68px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =========================================================================
+       1. NAVIGATION BAR (NETFLIX STYLE)
+       ========================================================================= -->
+  <header id="netflix-navbar" class="fixed top-0 inset-x-0 z-40 transition-colors duration-300 bg-gradient-to-b from-black/90 via-black/50 to-transparent">
+    <div class="max-w-[1440px] mx-auto px-4 sm:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-8">
+        <!-- Logo -->
+        <a href="#home" onclick="app.navigate('home'); return false;" class="netflix-logo text-2xl sm:text-3xl tracking-wider uppercase">
+          CINEMAX
+        </a>
+
+        <!-- Desktop Nav Links -->
+        <nav class="hidden md:flex items-center gap-5 text-xs sm:text-sm font-medium">
+          <button data-nav="home" onclick="app.navigate('home')" class="nav-link hover:text-gray-300 transition-colors">Нүүр</button>
+          <button data-nav="movies" onclick="app.navigate('movies')" class="nav-link hover:text-gray-300 transition-colors">Кино</button>
+          <button data-nav="mongol" onclick="app.navigate('mongol')" class="nav-link hover:text-gray-300 transition-colors">Монгол кино</button>
+          <button data-nav="series" onclick="app.navigate('series')" class="nav-link hover:text-gray-300 transition-colors">Сериал</button>
+          <button data-nav="anime" onclick="app.navigate('anime')" class="nav-link hover:text-gray-300 transition-colors">Аниме</button>
+          <button data-nav="mylist" onclick="app.navigate('mylist')" class="nav-link hover:text-gray-300 transition-colors">Миний жагсаалт</button>
+        </nav>
+      </div>
+
+      <div class="flex items-center gap-3 sm:gap-4">
+        <!-- Search Trigger / Input -->
+        <div class="relative flex items-center">
+          <button onclick="app.toggleSearchBox()" class="p-2 text-white hover:text-gray-300 transition-colors" title="Хайх">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          </button>
+          <div id="search-box-container" class="hidden absolute right-0 top-1/2 -translate-y-1/2 bg-black/90 border border-white/20 rounded-lg px-3 py-1.5 flex items-center gap-2 w-64 sm:w-72 shadow-2xl z-50">
+            <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input
+              id="navbar-search-input"
+              type="text"
+              oninput="app.handleSearchInput(this.value)"
+              placeholder="Кино, жүжигчин, төрөл..."
+              class="w-full bg-transparent text-xs sm:text-sm text-white focus:outline-none placeholder-gray-400"
+            />
+            <button onclick="app.closeSearchBox()" class="text-gray-400 hover:text-white text-xs">✕</button>
+          </div>
+        </div>
+
+        <!-- Theme Toggle -->
+        <button onclick="app.toggleTheme()" class="p-2 text-white hover:text-gray-300 text-sm" id="theme-icon-btn" title="Горим солих">☀️</button>
+
+        <!-- Admin Panel Link -->
+        <button onclick="app.openAdminPanel()" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded bg-red-600/20 text-red-400 border border-red-600/40 text-xs font-bold hover:bg-red-600 hover:text-white transition-colors">
+          ⚙️ Админ
+        </button>
+
+        <!-- Profile Avatar -->
+        <div id="nav-profile-area" class="relative">
+          <button onclick="app.navigate('mylist')" class="flex items-center gap-2 group">
+            <div class="w-8 h-8 rounded bg-gradient-to-br from-red-600 to-purple-800 flex items-center justify-center font-bold text-white text-xs shadow-md group-hover:scale-105 transition-transform">
+              Т
+            </div>
+          </button>
+        </div>
+
+        <!-- Mobile Menu Hamburger -->
+        <button onclick="app.toggleMobileMenu()" class="md:hidden p-2 text-white">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-nav-drawer" class="hidden md:hidden bg-black/95 border-b border-white/10 px-4 py-4 space-y-3">
+      <button onclick="app.navigate('home'); app.toggleMobileMenu();" class="block w-full text-left py-2 text-sm font-semibold">Нүүр</button>
+      <button onclick="app.navigate('movies'); app.toggleMobileMenu();" class="block w-full text-left py-2 text-sm font-semibold">Кино</button>
+      <button onclick="app.navigate('mongol'); app.toggleMobileMenu();" class="block w-full text-left py-2 text-sm font-semibold">Монгол кино</button>
+      <button onclick="app.navigate('series'); app.toggleMobileMenu();" class="block w-full text-left py-2 text-sm font-semibold">Сериал</button>
+      <button onclick="app.navigate('anime'); app.toggleMobileMenu();" class="block w-full text-left py-2 text-sm font-semibold">Аниме</button>
+      <button onclick="app.navigate('mylist'); app.toggleMobileMenu();" class="block w-full text-left py-2 text-sm font-semibold">Миний жагсаалт</button>
+      <button onclick="app.openAdminPanel(); app.toggleMobileMenu();" class="block w-full text-left py-2 text-sm font-semibold text-red-400">⚙️ Админ самбар</button>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       DYNAMIC MAIN VIEWPORT CONTAINER
+       ========================================================================= -->
+  <main id="app-root" class="min-h-screen"></main>
+
+  <!-- =========================================================================
+       MODAL OVERLAY (MOVIE DETAILS, TRAILER, ADMIN FORM)
+       ========================================================================= -->
+  <div id="modal-backdrop" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+    <div id="modal-content" class="w-full max-w-4xl bg-[#181818] border border-white/15 rounded-xl shadow-2xl relative overflow-hidden my-auto"></div>
+  </div>
+
+  <!-- =========================================================================
+       TOAST NOTIFICATION CONTAINER
+       ========================================================================= -->
+  <div id="toast-container" class="fixed bottom-20 md:bottom-8 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- =========================================================================
+       NETFLIX STYLE JAVASCRIPT ENGINE
+       ========================================================================= -->
+  <script>
+    // --- Authorized Open-Source HD Video Streams ---
+    const AUTHORIZED_VIDEOS = {
+      tearsOfSteel: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+      sintel: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+      bigBuckBunny: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+      elephantsDream: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+      forBiggerBlazes: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+    };
+
+    // --- Subtitle Cues ---
+    const SUBTITLE_CUES = [
+      { start: 0, end: 6, mn: 'CINEMAX МОНГОЛ — Netflix загварын албан ёсны 4K дамжуулалт', en: 'CINEMAX MONGOLIA — Official Netflix-style 4K Stream' },
+      { start: 6, end: 14, mn: 'Хүн төрөлхтний хувь заяаг өөрчлөх нууц ажиллагаа эхэллээ...', en: 'A secret operation that will change humanity begins now...' },
+      { start: 14, end: 24, mn: 'Бид эцсээ хүртэл тэмцэх болно. Ухрах зам гэж үгүй!', en: 'We will fight until the very end. There is no turning back!' },
+      { start: 24, end: 36, mn: 'Цаг хугацаа биднийг хүлээхгүй. Бүгд бэлэн үү?', en: 'Time will not wait for us. Is everyone ready?' },
+      { start: 36, end: 50, mn: 'Хамтдаа зогсоход хэн ч биднийг дийлэхгүй.', en: 'Standing together, no one can defeat us.' },
+      { start: 50, end: 70, mn: 'Шинэ ертөнцийн үүд хаалга нээгдэж байна...', en: 'The gates to a new world are opening...' }
+    ];
+
+    // --- Initial Movie Database ---
+    const INITIAL_MOVIES = [
+      {
+        id: 'mov-1',
+        titleMn: 'Зүрхний Хилэн',
+        titleEn: 'Fury of the Heart',
+        descriptionMn: 'Манжийн дарлалын хүнд бэрх цаг үед эх орон, ард түмнийхээ эрх чөлөөний төлөө тэмцсэн шилийн сайн эрсийн эр зориг, анд нөхдийн үнэнч тангарагийн тухай түүхэн туульсын уран сайхны кино.',
+        year: 2022,
+        country: 'Монгол',
+        genres: ['Түүхэн', 'Адал явдалт', 'Драма'],
+        category: 'mongol',
+        imdb: 8.9,
+        quality: '4K',
+        hdr: true,
+        ageRating: '18+',
+        dubType: 'МОН ДУУ',
+        duration: '2 цаг 15 мин',
+        director: 'Б.Тамир',
+        cast: ['М.Баярбат', 'Э.Алдар', 'Б.Барслхагва', 'О.Дөлгөөн'],
+        poster: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=600&q=80',
+        backdrop: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80',
+        videoUrl: AUTHORIZED_VIDEOS.tearsOfSteel,
+        trailerUrl: AUTHORIZED_VIDEOS.forBiggerBlazes,
+        featured: true,
+        trending: true,
+        newlyAdded: false,
+        views: 89400
+      },
+      {
+        id: 'mov-2',
+        titleMn: 'Дюн: Хоёрдугаар Анги',
+        titleEn: 'Dune: Part Two',
+        descriptionMn: 'Пол Атрейдес гэр бүлийг нь сүйрүүлсэн хуйвалдагчдаас өшөө авахаар Чани болон Фременчүүдтэй нэгдэнэ. Хайртай хүн болон орчлон ертөнцийн хувь заяаны хооронд сонголт хийх хүндхэн сорилт түүнийг хүлээж байна.',
+        year: 2024,
+        country: 'АНУ',
+        genres: ['Уран зөгнөлт', 'Адал явдалт', 'Драма'],
+        category: 'movie',
+        imdb: 8.8,
+        quality: '4K',
+        hdr: true,
+        ageRating: '16+',
+        dubType: 'МОН ДУУ',
+        duration: '2 цаг 46 мин',
+        director: 'Дени Вильнёв',
+        cast: ['Тимоти Шаламе', 'Зендая', 'Ребекка Фергюсон', 'Остин Батлер'],
+        poster: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=600&q=80',
+        backdrop: 'https://images.unsplash.com/photo-1547234935-80c7145ec969?auto=format&fit=crop&w=1600&q=80',
+        videoUrl: AUTHORIZED_VIDEOS.sintel,
+        trailerUrl: AUTHORIZED_VIDEOS.forBiggerBlazes,
+        featured: true,
+        trending: true,
+        newlyAdded: true,
+        views: 104500
+      },
+      {
+        id: 'mov-3',
+        titleMn: 'Тунгалаг Тамир',
+        titleEn: 'Crystal Tamir River',
+        descriptionMn: 'ХХ зууны эхэн үеийн Монголын нийгмийн өөрчлөлт, Эрдэнэ, Долгор, Итгэлт баян, Төмөр нарын амьдралын ээдрээт хувь заяаг өгүүлэх Монголын кино урлагийн алтан сан хөмрөгийн шилдэг бүтээл.',
+        year: 2023,
+        country: 'Монгол',
+        genres: ['Түүхэн', 'Драма'],
+        category: 'mongol',
+        imdb: 9.2,
+        quality: '4K',
+        hdr: true,
+        ageRating: '12+',
+        dubType: 'МОН ДУУ',
+        duration: '2 цаг 30 мин',
+        director: 'Р.Доржпалам',
+        cast: ['Н.Нямдаваа', 'Ш.Дэлгэржаргал', 'А.Очирбат'],
+        poster: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80',
+        backdrop: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1600&q=80',
+        videoUrl: AUTHORIZED_VIDEOS.tearsOfSteel,
+        trailerUrl: AUTHORIZED_VIDEOS.forBiggerBlazes,
+        featured: false,
+        trending: true,
+        newlyAdded: false,
+        views: 82100
+      },
+      {
+        id: 'mov-4',
+        titleMn: 'Сүнсний Илд: Тэнгэрийн Хаалга',
+        titleEn: 'Demon Slayer: Infinity Castle',
+        descriptionMn: 'Эртний чөтгөрүүдийн хаантай хийх эцсийн тулаан эхэлж, залуу сэлэмчин Танжиро болон Хашира нар хүн төрөлхтнийг аврахаар хязгааргүй цайзад нэвтэрнэ.',
+        year: 2025,
+        country: 'Япон',
+        genres: ['Адал явдалт', 'Уран зөгнөлт'],
+        category: 'anime',
+        imdb: 9.1,
+        quality: '4K',
+        hdr: true,
+        ageRating: '16+',
+        dubType: 'МОН ХАДМАЛ',
+        duration: '24 мин / анги',
+        episodes: 12,
+        director: 'Харуо Сотозаки',
+        cast: ['Нацуки Ханаэ', 'Акари Кито', 'Ёшицүгү Мацуока'],
+        poster: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=600&q=80',
+        backdrop: 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&w=1600&q=80',
+        videoUrl: AUTHORIZED_VIDEOS.sintel,
+        trailerUrl: AUTHORIZED_VIDEOS.forBiggerBlazes,
+        featured: true,
+        trending: true,
+        newlyAdded: true,
+        views: 118000
+      },
+      {
+        id: 'mov-5',
+        titleMn: 'Сөүлийн Шөнийн Ангуучид',
+        titleEn: 'The Roundup: Punishment',
+        descriptionMn: 'Мөрдөгч Ма Сок До олон улсын цахим гэмт хэргийн бүлэглэлийн толгойлогчийг баривчлахаар Сөүл болон Филиппиний хооронд ширүүн тулаан өрнүүлнэ.',
+        year: 2024,
+        country: 'Солонгос',
+        genres: ['Адал явдалт', 'Инээдмийн'],
+        category: 'movie',
+        imdb: 8.3,
+        quality: '1080P',
+        hdr: false,
+        ageRating: '18+',
+        dubType: 'МОН ДУУ',
+        duration: '1 цаг 49 мин',
+        director: 'Хо Мён Хэн',
+        cast: ['Ма Дон Сок', 'Ким Му Ёл', 'Пак Жи Хван'],
+        poster: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?auto=format&fit=crop&w=600&q=80',
+        backdrop: 'https://images.unsplash.com/photo-1538485399081-7191377e8241?auto=format&fit=crop&w=1600&q=80',
+        videoUrl: AUTHORIZED_VIDEOS.tearsOfSteel,
+        trailerUrl: AUTHORIZED_VIDEOS.forBiggerBlazes,
+        featured: false,
+        trending: true,
+        newlyAdded: true,
+        views: 74200
+      },
+      {
+        id: 'mov-6',
+        titleMn: 'Нулимсны Хатан Хаан',
+        titleEn: 'Queen of Tears',
+        descriptionMn: 'Их дэлгүүрийн өв залгамжлагч бүсгүй болон хөдөө тосгоноос гаралтай хуульч залуугийн гэрлэлт хямралд орсны дараа тэдний хайр сэтгэл дахин гайхамшигтайгаар сэргэнэ.',
+        year: 2024,
+        country: 'Солонгос',
+        genres: ['Хайр дурлалын', 'Драма', 'Инээдмийн'],
+        category: 'series',
+        imdb: 8.9,
+        quality: '4K',
+        hdr: true,
+        ageRating: '12+',
+        dubType: 'МОН ДУУ',
+        duration: '1 цаг 15 мин / анги',
+        episodes: 16,
+        director: 'Жан Ён У',
+        cast: ['Ким Су Хён', 'Ким Жи Вон', 'Пак Сон Хун'],
+        poster: 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=600&q=80',
+        backdrop: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1600&q=80',
+        videoUrl: AUTHORIZED_VIDEOS.bigBuckBunny,
+        trailerUrl: AUTHORIZED_VIDEOS.forBiggerBlazes,
+        featured: false,
+        trending: true,
+        newlyAdded: true,
+        views: 99400
+      },
+      {
+        id: 'mov-7',
+        titleMn: 'Хараалт Харшийн Сүүдэр',
+        titleEn: 'The Conjuring: Last Rites',
+        descriptionMn: 'Хуучин сүмийн дэргэдэх эзэнгүй харшид нүүж орсон гэр бүл шөнө дунд үл үзэгдэх чөтгөрийн хүчтэй нүүр тулна.',
+        year: 2024,
+        country: 'АНУ',
+        genres: ['Аймшгийн'],
+        category: 'movie',
+        imdb: 7.9,
+        quality: '1080P',
+        hdr: false,
+        ageRating: '18+',
+        dubType: 'МОН ХАДМАЛ',
+        duration: '1 цаг 54 мин',
+        director: 'Майкл Чавес',
+        cast: ['Вера Фармига', 'Патрик Уилсон', 'Женна Ортега'],
+        poster: 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&w=600&q=80',
+        backdrop: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1600&q=80',
+        videoUrl: AUTHORIZED_VIDEOS.elephantsDream,
+        trailerUrl: AUTHORIZED_VIDEOS.forBiggerBlazes,
+        featured: false,
+        trending: false,
+        newlyAdded: false,
+        views: 48100
+      },
+      {
+        id: 'mov-8',
+        titleMn: 'Луугийн Удам: Тэнгэрийн Тулаан',
+        titleEn: 'Creation of the Gods',
+        descriptionMn: 'Эртний Хятадын Шан гүрний үед хүн, бурхан, чөтгөрүүдийн хоорондох агуу тулаан дэгдэж, залуу баатар Жи Фа хаант улсыг аврахаар босно.',
+        year: 2024,
+        country: 'Хятад',
+        genres: ['Уран зөгнөлт', 'Адал явдалт', 'Түүхэн'],
+        category: 'movie',
+        imdb: 8.2,
+        quality: '4K',
+        hdr: true,
+        ageRating: '16+',
+        dubType: 'МОН ДУУ',
+        duration: '2 цаг 28 мин',
+        director: 'У Эршань',
+        cast: ['Крис Филлипс', 'Юй Ши', 'Хуан Бо'],
+        poster: 'https://images.unsplash.com/photo-1528164344705-47542687000d?auto=format&fit=crop&w=600&q=80',
+        backdrop: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&w=1600&q=80',
+        videoUrl: AUTHORIZED_VIDEOS.tearsOfSteel,
+        trailerUrl: AUTHORIZED_VIDEOS.forBiggerBlazes,
+        featured: false,
+        trending: false,
+        newlyAdded: true,
+        views: 52300
+      }
+    ];
+
+    const INITIAL_REVIEWS = [
+      { id: 'r-1', movieId: 'mov-1', userName: 'Бат-Эрдэнэ', rating: 10, comment: 'Монголын кино урлагийн гайхамшигт бүтээл!', date: '2026-03-01' },
+      { id: 'r-2', movieId: 'mov-2', userName: 'Номин-Эрдэнэ', rating: 9, comment: 'Netflix шиг өндөр чанартай сайхан платформ болжээ.', date: '2026-03-05' }
+    ];
+
+    // --- State & Storage Helper ---
+    const Storage = {
+      get(key, fallback) {
+        try {
+          const item = localStorage.getItem(key);
+          return item ? JSON.parse(item) : fallback;
+        } catch { return fallback; }
+      },
+      set(key, val) {
+        try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
+      }
+    };
+
+    const state = {
+      theme: Storage.get('nx_theme', 'dark'),
+      movies: Storage.get('nx_movies', INITIAL_MOVIES),
+      reviews: Storage.get('nx_reviews', INITIAL_REVIEWS),
+      watchlist: Storage.get('nx_watchlist', ['mov-1', 'mov-4']),
+      progress: Storage.get('nx_progress', {
+        'mov-2': { currentTime: 45, duration: 160 }
+      }),
+      currentView: 'home', // 'home' | 'movies' | 'mongol' | 'series' | 'anime' | 'search' | 'mylist' | 'admin' | 'player'
+      activeMovieId: null,
+      heroIndex: 0,
+      heroTimer: null,
+      searchQuery: '',
+      playerState: {
+        subtitleLang: 'mn',
+        quality: '4K Ultra HD',
+        episode: 1
+      }
+    };
+
+    // --- Main App Controller ---
+    const app = {
+      init() {
+        this.applyTheme();
+        this.render();
+        this.startHeroTimer();
+      },
+
+      save() {
+        Storage.set('nx_theme', state.theme);
+        Storage.set('nx_movies', state.movies);
+        Storage.set('nx_reviews', state.reviews);
+        Storage.set('nx_watchlist', state.watchlist);
+        Storage.set('nx_progress', state.progress);
+      },
+
+      toggleTheme() {
+        state.theme = state.theme === 'dark' ? 'light' : 'dark';
+        this.applyTheme();
+        this.save();
+        this.showToast(state.theme === 'dark' ? 'Netflix Dark Mode' : 'Light Mode');
+      },
+
+      applyTheme() {
+        const html = document.documentElement;
+        if (state.theme === 'light') {
+          html.classList.remove('dark');
+          html.classList.add('light');
+        } else {
+          html.classList.remove('light');
+          html.classList.add('dark');
+        }
+      },
+
+      showToast(msg) {
+        const c = document.getElementById('toast-container');
+        if (!c) return;
+        const t = document.createElement('div');
+        t.className = 'bg-[#181818] border border-white/20 px-4 py-3 rounded-lg text-xs font-bold text-white shadow-2xl flex items-center gap-2 animate-view';
+        t.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-600"></span><span>${msg}</span>`;
+        c.appendChild(t);
+        setTimeout(() => {
+          t.style.opacity = '0';
+          t.style.transition = 'opacity 0.3s ease';
+          setTimeout(() => t.remove(), 300);
+        }, 2600);
+      },
+
+      navigate(view) {
+        state.currentView = view;
+        this.render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+
+      toggleSearchBox() {
+        const box = document.getElementById('search-box-container');
+        const input = document.getElementById('navbar-search-input');
+        if (box) {
+          box.classList.toggle('hidden');
+          if (!box.classList.contains('hidden') && input) input.focus();
+        }
+      },
+
+      closeSearchBox() {
+        const box = document.getElementById('search-box-container');
+        if (box) box.classList.add('hidden');
+      },
+
+      handleSearchInput(val) {
+        state.searchQuery = val.trim();
+        if (state.currentView !== 'search' && state.searchQuery.length > 0) {
+          state.currentView = 'search';
+        } else if (state.searchQuery.length === 0 && state.currentView === 'search') {
+          state.currentView = 'home';
+        }
+        this.render();
+      },
+
+      toggleMobileMenu() {
+        const drawer = document.getElementById('mobile-nav-drawer');
+        if (drawer) drawer.classList.toggle('hidden');
+      },
+
+      // --- Watchlist ---
+      toggleWatchlist(movieId, e) {
+        if (e) e.stopPropagation();
+        const idx = state.watchlist.indexOf(movieId);
+        if (idx > -1) {
+          state.watchlist.splice(idx, 1);
+          this.showToast('Миний жагсаалтаас хаслаа');
+        } else {
+          state.watchlist.push(movieId);
+          this.showToast('Миний жагсаалтад нэмэгдлээ ✓');
+        }
+        this.save();
+        this.render();
+      },
+
+      // --- Hero Slider ---
+      startHeroTimer() {
+        if (state.heroTimer) clearInterval(state.heroTimer);
+        state.heroTimer = setInterval(() => {
+          if (state.currentView === 'home') {
+            const featured = state.movies.filter(m => m.featured);
+            if (featured.length > 1) {
+              state.heroIndex = (state.heroIndex + 1) % featured.length;
+              this.render();
+            }
+          }
+        }, 7000);
+      },
+
+      // --- Modals ---
+      openModal(html) {
+        const backdrop = document.getElementById('modal-backdrop');
+        const content = document.getElementById('modal-content');
+        if (content) content.innerHTML = html;
+        if (backdrop) backdrop.classList.remove('hidden');
+      },
+
+      closeModal() {
+        const backdrop = document.getElementById('modal-backdrop');
+        if (backdrop) backdrop.classList.add('hidden');
+      },
+
+      openMovieInfoModal(movieId) {
+        const m = state.movies.find(item => item.id === movieId);
+        if (!m) return;
+        const inList = state.watchlist.includes(m.id);
+
+        this.openModal(`
+          <div class="relative bg-[#181818] text-white">
+            <button onclick="app.closeModal()" class="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-black/70 hover:bg-red-600 flex items-center justify-center font-bold">✕</button>
+
+            <!-- Backdrop Banner -->
+            <div class="relative aspect-video w-full overflow-hidden bg-black">
+              <img src="${m.backdrop}" class="w-full h-full object-cover opacity-85" />
+              <div class="absolute inset-0 bg-gradient-to-t from-[#181818] via-transparent to-black/50"></div>
+              <div class="absolute bottom-6 left-6 right-6 space-y-3">
+                <h2 class="text-3xl sm:text-4xl font-black">${m.titleMn}</h2>
+                <div class="flex flex-wrap items-center gap-3">
+                  <button onclick="app.closeModal(); app.openPlayer('${m.id}')" class="px-6 py-2.5 rounded netflix-btn-red font-bold text-sm flex items-center gap-2">
+                    ▶ Үзэх
+                  </button>
+                  <button onclick="app.toggleWatchlist('${m.id}'); app.openMovieInfoModal('${m.id}')" class="px-5 py-2.5 rounded netflix-btn-gray font-bold text-sm">
+                    ${inList ? '✓ Жагсаалтад байгаа' : '+ Миний жагсаалт'}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Details Body -->
+            <div class="p-6 sm:p-8 space-y-6">
+              <div class="grid sm:grid-cols-3 gap-6">
+                <div class="sm:col-span-2 space-y-3">
+                  <div class="flex items-center gap-3 text-xs font-bold">
+                    <span class="text-green-400 font-extrabold">${Math.round(m.imdb * 10)}% тохирох</span>
+                    <span>${m.year}</span>
+                    <span class="px-1.5 py-0.5 rounded border border-white/30 text-[10px]">${m.ageRating}</span>
+                    <span>${m.duration}</span>
+                    <span class="px-2 py-0.5 rounded bg-red-600/30 text-red-400 text-[10px]">${m.quality}</span>
+                  </div>
+                  <p class="text-sm sm:text-base text-gray-300 leading-relaxed">${m.descriptionMn}</p>
+                </div>
+
+                <div class="space-y-2 text-xs text-gray-400 border-l border-white/10 pl-4">
+                  <p><strong class="text-white">Жүжигчид:</strong> ${m.cast.join(', ')}</p>
+                  <p><strong class="text-white">Найруулагч:</strong> ${m.director}</p>
+                  <p><strong class="text-white">Төрөл:</strong> ${m.genres.join(', ')}</p>
+                  <p><strong class="text-white">Дуу / Хадмал:</strong> ${m.dubType}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `);
+      },
+
+      // =======================================================================
+      // RENDER MOVIE CARD (NETFLIX PREVIEW STYLE)
+      // =======================================================================
+      renderMovieCard(movie) {
+        const inList = state.watchlist.includes(movie.id);
+        const prog = state.progress[movie.id];
+        const pct = prog && prog.duration ? Math.min(100, Math.round((prog.currentTime / prog.duration) * 100)) : 0;
+
+        return `
+          <div onclick="app.openMovieInfoModal('${movie.id}')" class="netflix-card rounded-md overflow-hidden cursor-pointer relative group flex flex-col shrink-0">
+            <div class="aspect-[16/9] w-full overflow-hidden bg-black relative">
+              <img src="${movie.backdrop}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              <div class="absolute top-2 right-2 px-1.5 py-0.5 rounded bg-black/70 text-[10px] font-bold text-white border border-white/20">${movie.quality}</div>
+            </div>
+
+            <div class="p-3 bg-[#181818] flex flex-col justify-between flex-1 space-y-2">
+              <div>
+                <h4 class="font-bold text-sm text-white truncate">${movie.titleMn}</h4>
+                <p class="text-[11px] text-gray-400 truncate">${movie.genres.join(' • ')}</p>
+              </div>
+
+              <div class="flex items-center justify-between pt-1">
+                <div class="flex items-center gap-1.5">
+                  <button onclick="event.stopPropagation(); app.openPlayer('${movie.id}')" class="w-7 h-7 rounded-full bg-white text-black flex items-center justify-center hover:scale-110 transition-transform font-bold text-xs">▶</button>
+                  <button onclick="event.stopPropagation(); app.toggleWatchlist('${movie.id}', event)" class="w-7 h-7 rounded-full bg-zinc-800 text-white border border-white/30 flex items-center justify-center hover:border-white transition-colors text-xs font-bold">${inList ? '✓' : '+'}</button>
+                </div>
+                <span class="text-[10px] font-bold text-green-400">IMDb ${movie.imdb}</span>
+              </div>
+
+              ${pct > 0 ? `
+                <div class="w-full bg-zinc-700 h-1 rounded-full overflow-hidden">
+                  <div class="bg-red-600 h-full" style="width: ${pct}%"></div>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      },
+
+      renderRow(title, movies) {
+        if (!movies || movies.length === 0) return '';
+        const rowId = 'row-' + Math.random().toString(36).substring(2, 7);
+
+        return `
+          <div class="space-y-2 px-4 sm:px-8 py-3">
+            <h3 class="text-base sm:text-xl font-bold text-white">${title}</h3>
+            <div id="${rowId}" class="netflix-row-track flex gap-3 overflow-x-auto pb-3 scroll-smooth">
+              ${movies.map(m => this.renderMovieCard(m)).join('')}
+            </div>
+          </div>
+        `;
+      },
+
+      // =======================================================================
+      // VIEWS
+      // =======================================================================
+      renderHome() {
+        const featured = state.movies.filter(m => m.featured);
+        const hero = featured[state.heroIndex % featured.length] || state.movies[0];
+
+        const trending = state.movies.filter(m => m.trending);
+        const mongol = state.movies.filter(m => m.country === 'Монгол');
+        const newAdded = state.movies.filter(m => m.newlyAdded);
+        const topRated = [...state.movies].sort((a,b) => b.imdb - a.imdb);
+        const animeSeries = state.movies.filter(m => m.category === 'anime' || m.category === 'series');
+        const asian = state.movies.filter(m => m.country === 'Солонгос' || m.country === 'Хятад' || m.country === 'Япон');
+
+        return `
+          <div class="animate-view pb-16">
+            <!-- HERO BANNER -->
+            <section class="relative h-[560px] sm:h-[650px] w-full overflow-hidden bg-black">
+              <img src="${hero.backdrop}" class="absolute inset-0 w-full h-full object-cover opacity-80" />
+              <div class="absolute inset-0 bg-gradient-to-t from-[#141414] via-black/30 to-black/60"></div>
+
+              <div class="relative max-w-[1440px] mx-auto px-4 sm:px-8 h-full flex flex-col justify-end pb-16 z-10 space-y-4 max-w-2xl">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-extrabold uppercase">CINEMAX ОРИГИНАЛ</span>
+                  <span class="px-2 py-0.5 rounded bg-white/20 text-white text-[10px] font-bold">${hero.quality}</span>
+                  <span class="px-2 py-0.5 rounded border border-white/40 text-white text-[10px] font-bold">${hero.ageRating}</span>
+                </div>
+
+                <h1 class="text-3xl sm:text-6xl font-black text-white tracking-tight">${hero.titleMn}</h1>
+
+                <p class="text-sm sm:text-base text-gray-200 line-clamp-3 leading-relaxed">${hero.descriptionMn}</p>
+
+                <div class="flex items-center gap-3 pt-2">
+                  <button onclick="app.openPlayer('${hero.id}')" class="px-7 py-3 rounded netflix-btn-red font-extrabold text-sm sm:text-base flex items-center gap-2">
+                    ▶ Үзэх
+                  </button>
+                  <button onclick="app.openMovieInfoModal('${hero.id}')" class="px-6 py-3 rounded netflix-btn-gray font-extrabold text-sm sm:text-base flex items-center gap-2">
+                    ℹ️ Дэлгэрэнгүй
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <!-- ROWS -->
+            <div class="-mt-16 sm:-mt-24 relative z-20 space-y-4">
+              ${this.renderRow('Тренд болж буй кино', trending)}
+              ${this.renderRow('Монгол кино', mongol)}
+              ${this.renderRow('Шинээр нэмэгдсэн', newAdded)}
+              ${this.renderRow('Шилдэг үнэлгээтэй', topRated)}
+              ${this.renderRow('Аниме ба Сериал', animeSeries)}
+              ${this.renderRow('Солонгос ба Азийн кино', asian)}
+            </div>
+          </div>
+        `;
+      },
+
+      renderCatalogView(catFilter = 'all') {
+        const query = state.searchQuery.toLowerCase();
+        const filtered = state.movies.filter(m => {
+          if (catFilter === 'mongol' && m.country !== 'Монгол') return false;
+          if (catFilter === 'series' && m.category !== 'series') return false;
+          if (catFilter === 'anime' && m.category !== 'anime') return false;
+          if (catFilter === 'movies' && m.category !== 'movie') return false;
+          if (query) {
+            const match = m.titleMn.toLowerCase().includes(query) ||
+                          m.titleEn.toLowerCase().includes(query) ||
+                          m.genres.some(g => g.toLowerCase().includes(query)) ||
+                          m.cast.some(c => c.toLowerCase().includes(query));
+            if (!match) return false;
+          }
+          return true;
+        });
+
+        const titles = {
+          all: 'Бүх кино сан',
+          movies: 'Уран сайхны кинонууд',
+          mongol: 'Монгол кино',
+          series: 'Олон ангит сериал',
+          anime: 'Аниме ертөнц',
+          search: `Хайлтын үр дүн: "${state.searchQuery}"`
+        };
+
+        return `
+          <div class="max-w-[1440px] mx-auto px-4 sm:px-8 py-24 space-y-6 animate-view">
+            <h1 class="text-2xl sm:text-3xl font-black">${titles[catFilter] || 'Кино сан'} (${filtered.length})</h1>
+
+            ${filtered.length === 0 ? `
+              <div class="py-20 text-center space-y-3">
+                <p class="text-3xl">🔍</p>
+                <p class="font-bold text-gray-400">Хайлтын илэрц олдсонгүй</p>
+              </div>
+            ` : `
+              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                ${filtered.map(m => this.renderMovieCard(m)).join('')}
+              </div>
+            `}
+          </div>
+        `;
+      },
+
+      renderMyList() {
+        const list = state.watchlist.map(id => state.movies.find(m => m.id === id)).filter(Boolean);
+
+        return `
+          <div class="max-w-[1440px] mx-auto px-4 sm:px-8 py-24 space-y-6 animate-view">
+            <h1 class="text-2xl sm:text-3xl font-black">Миний жагсаалт (${list.length})</h1>
+
+            ${list.length === 0 ? `
+              <div class="py-20 text-center space-y-3">
+                <p class="text-3xl">📂</p>
+                <p class="font-bold text-gray-400">Таны жагсаалт хоосон байна.</p>
+                <button onclick="app.navigate('home')" class="px-5 py-2 rounded netflix-btn-red text-xs font-bold">Кино үзэх</button>
+              </div>
+            ` : `
+              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                ${list.map(m => this.renderMovieCard(m)).join('')}
+              </div>
+            `}
+          </div>
+        `;
+      },
+
+      // =======================================================================
+      // CUSTOM VIDEO PLAYER OVERVIEW
+      // =======================================================================
+      openPlayer(movieId) {
+        state.activeMovieId = movieId;
+        state.currentView = 'player';
+        this.render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+
+      renderPlayerView() {
+        const m = state.movies.find(item => item.id === state.activeMovieId) || state.movies[0];
+        const ps = state.playerState;
+
+        return `
+          <div class="max-w-[1440px] mx-auto px-4 sm:px-8 py-24 space-y-6 animate-view">
+            <div class="flex items-center justify-between">
+              <button onclick="app.navigate('home')" class="px-4 py-2 rounded bg-white/10 hover:bg-white/20 text-xs font-bold">‹ Буцах</button>
+              <div class="flex items-center gap-2 text-xs">
+                <span class="px-2.5 py-1 rounded bg-green-500/20 text-green-300">● 4K Ultra HD</span>
+                <span class="px-2.5 py-1 rounded bg-red-600 text-white font-bold">${ps.quality}</span>
+              </div>
+            </div>
+
+            <!-- Player Box -->
+            <div id="nx-player-box" class="relative w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border border-white/10">
+              <video
+                id="nx-video"
+                src="${m.videoUrl || AUTHORIZED_VIDEOS.tearsOfSteel}"
+                poster="${m.backdrop}"
+                playsinline
+                onclick="app.playerTogglePlay()"
+                class="w-full h-full object-contain bg-black cursor-pointer"
+              ></video>
+
+              <!-- Subtitle Overlay -->
+              <div id="nx-sub-overlay" class="absolute bottom-20 inset-x-4 text-center pointer-events-none z-20">
+                <span id="nx-sub-text" class="px-4 py-1.5 rounded bg-black/80 text-white text-sm sm:text-lg font-bold shadow-lg">
+                  CINEMAX МОНГОЛ — Албан ёсны дамжуулалт
+                </span>
+              </div>
+
+              <!-- Controls -->
+              <div class="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/95 to-transparent z-30 space-y-2">
+                <div class="flex items-center gap-3">
+                  <span id="nx-cur-time" class="text-xs font-mono">00:00</span>
+                  <input id="nx-scrubber" type="range" min="0" max="100" step="0.1" value="0" oninput="app.playerSeek(this.value)" class="netflix-range w-full" />
+                  <span id="nx-dur-time" class="text-xs font-mono">00:00</span>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div class="flex items-center gap-2">
+                    <button id="nx-play-btn" onclick="app.playerTogglePlay()" class="px-3 py-1.5 rounded netflix-btn-red text-xs font-bold">⏸ Зогсоох</button>
+                    <button onclick="app.playerSkip(-10)" class="px-2 py-1.5 rounded bg-white/10 text-xs font-bold">↺ 10с</button>
+                    <button onclick="app.playerSkip(10)" class="px-2 py-1.5 rounded bg-white/10 text-xs font-bold">10с ↻</button>
+                  </div>
+
+                  <div class="flex items-center gap-2">
+                    <select onchange="app.playerSetSubLang(this.value)" class="px-2.5 py-1.5 rounded bg-black text-white border border-white/30 text-xs font-bold">
+                      <option value="mn">Монгол хадмал</option>
+                      <option value="en">English Sub</option>
+                      <option value="off">Унтраах</option>
+                    </select>
+                    <select onchange="state.playerState.quality=this.value; app.showToast('Чанар: '+this.value);" class="px-2.5 py-1.5 rounded bg-black text-white border border-white/30 text-xs font-bold">
+                      <option value="4K Ultra HD">4K Ultra HD</option>
+                      <option value="1080p Full HD">1080p Full HD</option>
+                    </select>
+                    <button onclick="app.playerFullscreen()" class="px-3 py-1.5 rounded bg-white/20 text-xs font-bold">⛶ Бүтэн дэлгэц</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      },
+
+      bindPlayerEvents() {
+        const vid = document.getElementById('nx-video');
+        if (!vid) return;
+
+        vid.addEventListener('loadedmetadata', () => {
+          const dur = document.getElementById('nx-dur-time');
+          const scr = document.getElementById('nx-scrubber');
+          if (dur) dur.textContent = this.formatTime(vid.duration);
+          if (scr) scr.max = vid.duration || 100;
+          vid.play().catch(() => {});
+        });
+
+        vid.addEventListener('timeupdate', () => {
+          const cur = vid.currentTime;
+          const dur = vid.duration || 100;
+          const curEl = document.getElementById('nx-cur-time');
+          const scr = document.getElementById('nx-scrubber');
+          if (curEl) curEl.textContent = this.formatTime(cur);
+          if (scr) scr.value = cur;
+
+          // Subtitles
+          const subText = document.getElementById('nx-sub-text');
+          const subOverlay = document.getElementById('nx-sub-overlay');
+          if (subText && subOverlay && state.playerState.subtitleLang !== 'off') {
+            const loopTime = cur % 70;
+            const cue = SUBTITLE_CUES.find(c => loopTime >= c.start && loopTime < c.end);
+            if (cue) {
+              subText.textContent = state.playerState.subtitleLang === 'mn' ? cue.mn : cue.en;
+            }
+          }
+
+          if (Math.floor(cur) % 3 === 0) {
+            state.progress[state.activeMovieId] = { currentTime: cur, duration: dur };
+            this.save();
+          }
+        });
+      },
+
+      playerTogglePlay() {
+        const vid = document.getElementById('nx-video');
+        const btn = document.getElementById('nx-play-btn');
+        if (!vid) return;
+        if (vid.paused) {
+          vid.play();
+          if (btn) btn.textContent = '⏸ Зогсоох';
+        } else {
+          vid.pause();
+          if (btn) btn.textContent = '▶ Тоглуулах';
+        }
+      },
+
+      playerSkip(sec) {
+        const vid = document.getElementById('nx-video');
+        if (vid) vid.currentTime = Math.max(0, Math.min(vid.duration || 0, vid.currentTime + sec));
+      },
+
+      playerSeek(val) {
+        const vid = document.getElementById('nx-video');
+        if (vid) vid.currentTime = Number(val);
+      },
+
+      playerSetSubLang(lang) {
+        state.playerState.subtitleLang = lang;
+        this.showToast(lang === 'mn' ? 'Монгол хадмал' : 'English Sub');
+      },
+
+      playerFullscreen() {
+        const box = document.getElementById('nx-player-box');
+        if (box && !document.fullscreenElement) box.requestFullscreen?.().catch(() => {});
+        else if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {});
+      },
+
+      formatTime(sec) {
+        if (!sec || isNaN(sec)) return '00:00';
+        const m = Math.floor(sec / 60);
+        const s = Math.floor(sec % 60);
+        return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      },
+
+      // =======================================================================
+      // ADMIN DASHBOARD
+      // =======================================================================
+      openAdminPanel() {
+        state.currentView = 'admin';
+        this.render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+
+      renderAdminView() {
+        return `
+          <div class="max-w-[1440px] mx-auto px-4 sm:px-8 py-24 space-y-6 animate-view">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-xs font-bold text-red-500 uppercase tracking-widest">Админ удирдлага</span>
+                <h1 class="text-2xl sm:text-3xl font-black">Контентын менежмент (${state.movies.length})</h1>
+              </div>
+              <button onclick="app.openAdminForm()" class="px-5 py-2.5 rounded netflix-btn-red text-xs font-extrabold">+ Шинэ кино нэмэх</button>
+            </div>
+
+            <div class="bg-[#181818] border border-white/10 rounded-lg overflow-x-auto">
+              <table class="w-full text-left text-xs sm:text-sm">
+                <thead class="bg-white/5 border-b border-white/10 text-gray-400">
+                  <tr>
+                    <th class="py-3 px-4">Кино</th>
+                    <th class="py-3 px-4">Улс / Он</th>
+                    <th class="py-3 px-4">IMDb</th>
+                    <th class="py-3 px-4 text-right">Үйлдэл</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-white/10">
+                  ${state.movies.map(m => `
+                    <tr>
+                      <td class="py-3 px-4 flex items-center gap-3">
+                        <img src="${m.poster}" class="w-9 h-12 object-cover rounded" />
+                        <div>
+                          <p class="font-bold">${m.titleMn}</p>
+                          <p class="text-xs text-gray-400">${m.titleEn}</p>
+                        </div>
+                      </td>
+                      <td class="py-3 px-4">${m.country} • ${m.year}</td>
+                      <td class="py-3 px-4 text-green-400 font-bold">★ ${m.imdb}</td>
+                      <td class="py-3 px-4 text-right space-x-2">
+                        <button onclick="app.openAdminForm('${m.id}')" class="px-3 py-1 rounded bg-blue-600/20 text-blue-400 font-bold text-xs">Засах</button>
+                        <button onclick="app.adminDeleteMovie('${m.id}')" class="px-3 py-1 rounded bg-red-600/20 text-red-400 font-bold text-xs">Устгах</button>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      },
+
+      openAdminForm(editId = null) {
+        const m = editId ? state.movies.find(item => item.id === editId) : null;
+        this.openModal(`
+          <div class="p-6 sm:p-8 bg-[#181818] text-white space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="font-black text-lg">${m ? 'Кино мэдээлэл засах' : 'Шинэ кино нэмэх'}</h3>
+              <button onclick="app.closeModal()" class="text-gray-400 hover:text-white">✕</button>
+            </div>
+            <form onsubmit="app.saveAdminMovie(event, '${editId || ''}')" class="space-y-3 text-xs sm:text-sm">
+              <div class="grid sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-bold mb-1">Монгол нэр *</label>
+                  <input id="adm-titleMn" required value="${m ? m.titleMn : ''}" class="w-full px-3.5 py-2 rounded bg-black/40 border border-white/20" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold mb-1">Англи нэр</label>
+                  <input id="adm-titleEn" value="${m ? m.titleEn : ''}" class="w-full px-3.5 py-2 rounded bg-black/40 border border-white/20" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-3 gap-3">
+                <div>
+                  <label class="block text-xs font-bold mb-1">Улс</label>
+                  <input id="adm-country" value="${m ? m.country : 'Монгол'}" class="w-full px-3 py-2 rounded bg-black/40 border border-white/20" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold mb-1">Он</label>
+                  <input id="adm-year" type="number" value="${m ? m.year : 2026}" class="w-full px-3 py-2 rounded bg-black/40 border border-white/20" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold mb-1">IMDb</label>
+                  <input id="adm-imdb" type="number" step="0.1" value="${m ? m.imdb : 8.5}" class="w-full px-3 py-2 rounded bg-black/40 border border-white/20" />
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold mb-1">Постер зураг (URL)</label>
+                <input id="adm-poster" value="${m ? m.poster : 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=600&q=80'}" class="w-full px-3.5 py-2 rounded bg-black/40 border border-white/20" />
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold mb-1">Тайлбар</label>
+                <textarea id="adm-desc" rows="2" required class="w-full px-3.5 py-2 rounded bg-black/40 border border-white/20">${m ? m.descriptionMn : ''}</textarea>
+              </div>
+
+              <div class="flex justify-end gap-2 pt-2">
+                <button type="button" onclick="app.closeModal()" class="px-4 py-2 rounded bg-white/10 text-xs font-bold">Цуцлах</button>
+                <button type="submit" class="px-5 py-2 rounded netflix-btn-red text-xs font-extrabold">Хадгалах</button>
+              </div>
+            </form>
+          </div>
+        `);
+      },
+
+      saveAdminMovie(e, editId) {
+        e.preventDefault();
+        const payload = {
+          titleMn: document.getElementById('adm-titleMn').value.trim(),
+          titleEn: document.getElementById('adm-titleEn').value.trim() || 'Netflix Original',
+          country: document.getElementById('adm-country').value.trim(),
+          year: Number(document.getElementById('adm-year').value),
+          imdb: Number(document.getElementById('adm-imdb').value),
+          poster: document.getElementById('adm-poster').value.trim(),
+          backdrop: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80',
+          descriptionMn: document.getElementById('adm-desc').value.trim(),
+          genres: ['Драма', 'Адал явдалт'],
+          category: 'movie',
+          quality: '4K',
+          ageRating: '16+',
+          dubType: 'МОН ДУУ',
+          duration: '2 цаг 05 мин',
+          director: 'Б.Тамир',
+          cast: ['Жүжигчин 1', 'Жүжигчин 2'],
+          videoUrl: AUTHORIZED_VIDEOS.tearsOfSteel,
+          trailerUrl: AUTHORIZED_VIDEOS.forBiggerBlazes,
+          featured: false,
+          trending: true,
+          newlyAdded: true,
+          views: 1200
+        };
+
+        if (editId) {
+          state.movies = state.movies.map(m => m.id === editId ? { ...m, ...payload } : m);
+          this.showToast('Кино амжилттай шинэчлэгдлээ!');
+        } else {
+          state.movies.unshift({ id: 'mov-' + Date.now(), ...payload });
+          this.showToast('Шинэ кино санд нэмэгдлээ!');
+        }
+
+        this.save();
+        this.closeModal();
+        this.render();
+      },
+
+      adminDeleteMovie(id) {
+        state.movies = state.movies.filter(m => m.id !== id);
+        this.save();
+        this.showToast('Кино сангаас устгагдлаа');
+        this.render();
+      },
+
+      // =======================================================================
+      // MAIN RENDER DISPATCHER
+      // =======================================================================
+      render() {
+        const root = document.getElementById('app-root');
+        if (!root) return;
+
+        switch (state.currentView) {
+          case 'movies':
+            root.innerHTML = this.renderCatalogView('movies');
+            break;
+          case 'mongol':
+            root.innerHTML = this.renderCatalogView('mongol');
+            break;
+          case 'series':
+            root.innerHTML = this.renderCatalogView('series');
+            break;
+          case 'anime':
+            root.innerHTML = this.renderCatalogView('anime');
+            break;
+          case 'search':
+            root.innerHTML = this.renderCatalogView('all');
+            break;
+          case 'mylist':
+            root.innerHTML = this.renderMyList();
+            break;
+          case 'admin':
+            root.innerHTML = this.renderAdminView();
+            break;
+          case 'player':
+            root.innerHTML = this.renderPlayerView();
+            this.bindPlayerEvents();
+            break;
+          case 'home':
+          default:
+            root.innerHTML = this.renderHome();
+            break;
+        }
+      }
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      app.init();
+    });
+  </script>
+</body>
+</html>
